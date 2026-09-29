@@ -1,13 +1,13 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { GlassCard } from "@/components/ui/GlassCard";
 import { GlassButton } from "@/components/ui/GlassButton";
 import { AlertTriangle, Bot, Database, FileCheck2, Scale } from "lucide-react";
+import { AnalysisCaseData } from "../types";
 
 interface Step6Props {
-  caseData: { description: string; parties: string[]; facts: { summary: string; keyClaims: string[]; contradictions: string[]; parties: string[]; dates: string[]; events: string[]; evidence: string[] } | null; laws: unknown[] | null; similarCases: unknown[] | null; analysis: unknown };
-  setCaseData: (data: any) => void;
+  caseData: AnalysisCaseData;
+  setCaseData: (data: AnalysisCaseData) => void;
   onNext: () => void;
   onPrevious: () => void;
 }

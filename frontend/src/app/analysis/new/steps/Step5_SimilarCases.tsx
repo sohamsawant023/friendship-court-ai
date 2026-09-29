@@ -1,13 +1,13 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { GlassCard } from "@/components/ui/GlassCard";
 import { GlassButton } from "@/components/ui/GlassButton";
 import { AlertTriangle, BookOpen, Search } from "lucide-react";
+import { AnalysisCaseData } from "../types";
 
 interface Step5Props {
-  caseData: { similarCases: Array<{ id: string; name: string; court: string; year: string; issue: string; relevance: string; source: string }> | null };
-  setCaseData: (data: any) => void;
+  caseData: AnalysisCaseData;
+  setCaseData: (data: AnalysisCaseData) => void;
   onNext: () => void;
   onPrevious: () => void;
 }

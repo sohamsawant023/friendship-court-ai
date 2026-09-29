@@ -1,18 +1,13 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { GlassCard } from "@/components/ui/GlassCard";
 import { GlassButton } from "@/components/ui/GlassButton";
 import { FileText, Info, Users, MapPin, CalendarDays } from "lucide-react";
+import { AnalysisCaseData } from "../types";
 
 interface Step3Props {
-  caseData: {
-    id: string; title: string; category: string; description: string; location: string;
-    jurisdiction: string; relevantDates: string; parties: string[];
-    documents: Array<{ id: string; name: string; size: number; type: string; status: string }>;
-    facts: { summary: string; keyClaims: string[]; contradictions: string[]; parties: string[]; dates: string[]; events: string[]; evidence: string[] } | null;
-  };
-  setCaseData: (data: any) => void;
+  caseData: AnalysisCaseData;
+  setCaseData: (data: AnalysisCaseData) => void;
   onNext: () => void;
   onPrevious: () => void;
 }

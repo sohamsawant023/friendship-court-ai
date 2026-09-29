@@ -1,24 +1,14 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { GlassCard } from "@/components/ui/GlassCard";
 import { GlassButton } from "@/components/ui/GlassButton";
 import { GlassFileUpload } from "@/components/ui/GlassFileUpload";
 import { FileText, Upload } from "lucide-react";
+import { AnalysisCaseData } from "../types";
 
 interface Step2Props {
-  caseData: {
-    id: string;
-    title: string;
-    category: string;
-    description: string;
-    location: string;
-    jurisdiction: string;
-    relevantDates: string;
-    parties: string[];
-    documents: Array<{ id: string; name: string; size: number; type: string; status: string }>;
-  };
-  setCaseData: (data: any) => void;
+  caseData: AnalysisCaseData;
+  setCaseData: (data: AnalysisCaseData) => void;
   onNext: () => void;
   onPrevious: () => void;
 }
