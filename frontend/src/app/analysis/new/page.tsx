@@ -14,41 +14,7 @@ import Step4_LawIdentification from "./steps/Step4_LawIdentification";
 import Step5_SimilarCases from "./steps/Step5_SimilarCases";
 import Step6_AIAnalysis from "./steps/Step6_AIAnalysis";
 import Step7_FinalReport from "./steps/Step7_FinalReport";
-
-interface CaseData {
-  id: string;
-  title: string;
-  category: string;
-  description: string;
-  location: string;
-  jurisdiction: string;
-  relevantDates: string;
-  parties: string[];
-  documents: Array<{ id: string; name: string; size: number; type: string; status: string }>;
-  facts: {
-    summary: string;
-    keyClaims: string[];
-    contradictions: string[];
-    parties: string[];
-    dates: string[];
-    events: string[];
-    evidence: string[];
-  } | null;
-  laws: Array<{ id: number; name: string; section: string; explanation: string; relevance: string }> | null;
-  similarCases: Array<{ id: string; name: string; court: string; year: string; issue: string; relevance: string; source: string }> | null;
-  analysis: {
-    summary: string;
-    keyFacts: string[];
-    relevantLaws: string[];
-    argumentsA: string[];
-    argumentsB: string[];
-    supportingEvidence: string[];
-    similarCases: string[];
-    legalIssues: string[];
-    questions: string[];
-  } | null;
-  report: any;
-}
+import { AnalysisCaseData as CaseData } from "./types";
 
 export default function NewAnalysis() {
   const router = useRouter();

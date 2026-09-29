@@ -1,22 +1,13 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState } from "react";
 import { GlassButton } from "@/components/ui/GlassButton";
 import { Info, Users, Calendar, MapPin } from "lucide-react";
+import { AnalysisCaseData } from "../types";
 
 interface Step1Props {
-  caseData: {
-    id: string;
-    title: string;
-    category: string;
-    description: string;
-    location: string;
-    jurisdiction: string;
-    relevantDates: string;
-    parties: string[];
-  };
-  setCaseData: (data: any) => void;
+  caseData: AnalysisCaseData;
+  setCaseData: (data: AnalysisCaseData) => void;
   onNext: () => void;
 }
 
