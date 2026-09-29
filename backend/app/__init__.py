@@ -1,0 +1,1 @@
+# Friendship Court AI Backend
