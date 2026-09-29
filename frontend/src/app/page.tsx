@@ -13,6 +13,7 @@ interface RecentAnalysis {
   status: "in_progress" | "completed";
   createdAt: string;
   participants: string[];
+  workflowVersion?: number;
 }
 
 export default function Home() {
@@ -22,9 +23,11 @@ export default function Home() {
 
   useEffect(() => {
     try {
-      setCases(JSON.parse(localStorage.getItem("recentCases") || "[]"));
-      const current = JSON.parse(localStorage.getItem("currentAnalysis") || "null");
-      setDocumentCount(Array.isArray(current?.documents) ? current.documents.length : 0);
+      const saved: unknown = JSON.parse(localStorage.getItem("recentCases") || "[]");
+      setCases(Array.isArray(saved) ? saved.filter((item): item is RecentAnalysis => item?.workflowVersion === 2) : []);
+      const current: unknown = JSON.parse(localStorage.getItem("currentAnalysis") || "null");
+      const currentDraft = current as { documents?: unknown[] } | null;
+      setDocumentCount(Array.isArray(currentDraft?.documents) ? currentDraft.documents.length : 0);
     } catch {
       setCases([]);
       setDocumentCount(0);
@@ -67,7 +70,7 @@ export default function Home() {
 
         <aside className="space-y-4">
           <GlassCard className="p-5"><p className="text-[10px] font-semibold uppercase tracking-[.16em] text-accentGold">DATA & SOURCES</p><h3 className="mt-3 text-base font-medium text-white">Private local drafts</h3><p className="mt-2 text-xs leading-relaxed text-textSecondary">Case details and selected file names are saved to this browser. There is no legal research source or document upload service connected.</p><div className="mt-4 flex justify-between border-t border-glassBorderSecondary pt-3 text-xs"><span className="text-textSecondary">Files in current draft</span><span className="text-white">{documentCount}</span></div></GlassCard>
-          <GlassCard variant="secondary" className="p-5"><p className="text-[10px] font-semibold uppercase tracking-[.16em] text-textSecondary">IMPORTANT</p><p className="mt-3 text-xs leading-relaxed text-textSecondary">AI-generated information is informational only. It is not legal advice or a court decision. Verify important information with a qualified legal professional and authoritative sources.</p></GlassCard>
+          <GlassCard variant="secondary" className="p-5"><p className="text-[10px] font-semibold uppercase tracking-[.16em] text-textSecondary">IMPORTANT</p><p className="mt-3 text-xs leading-relaxed text-textSecondary">AI-generated information is for informational purposes and does not constitute legal advice or a court decision. Verify important information with a qualified legal professional and authoritative legal sources.</p></GlassCard>
         </aside>
       </div>
     </div>

@@ -19,8 +19,6 @@ export function Navbar() {
   const navItems = [
     { name: "Dashboard", href: "/" },
     { name: "New Analysis", href: "/analysis/new" },
-    { name: "History", href: "/history" },
-    { name: "Appeals", href: "/appeals" },
   ];
 
   return (
@@ -43,7 +41,7 @@ export function Navbar() {
             <Scale className="w-5 h-5 text-background" />
           </div>
           <span className="font-bold tracking-tight text-white hidden sm:block">
-            Friendship <span className="text-accentGold font-medium">Court</span>
+            Friend <span className="text-accentGold font-medium">Court AI</span>
           </span>
         </Link>
 

@@ -11,9 +11,11 @@ from app.api import appeal_router, hearing_router
 
 app = FastAPI(title="Friendship Court AI", version="1.0.0")
 
+# Configure CORS - update ALLOWED_ORIGINS for production
+ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS", "*").split(",")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], # For development
+    allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
