@@ -28,7 +28,7 @@ export default function Step1_CaseInput({ caseData, setCaseData, onNext }: Step1
     if (!caseData.title.trim()) newErrors.title = "Case title is required";
     if (!caseData.category.trim()) newErrors.category = "Category is required";
     if (!caseData.description.trim()) newErrors.description = "Description is required";
-    if (caseData.parties.length < 2) newErrors.parties = "At least 2 parties are required";
+    if (caseData.parties.filter((party) => party.trim()).length < 2) newErrors.parties = "Enter at least 2 party names";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -79,12 +79,13 @@ export default function Step1_CaseInput({ caseData, setCaseData, onNext }: Step1
 
       {/* Case Title */}
       <div className="space-y-2">
-        <label className="text-xs font-semibold uppercase tracking-widest text-textSecondary">Case Title</label>
+        <label htmlFor="case-title" className="text-xs font-semibold uppercase tracking-widest text-textSecondary">Case Title</label>
         <input
+          id="case-title"
           type="text"
           value={caseData.title}
           onChange={(e) => setCaseData({ ...caseData, title: e.target.value })}
-          placeholder="e.g., The Pizza Incident"
+          placeholder="e.g., Lease deposit dispute"
           className={`w-full bg-background border rounded-xl p-4 text-white placeholder:text-slate-600 focus:outline-none focus:border-accentGold transition-colors ${
             errors.title ? "border-red-500" : "border-glassBorder"
           }`}
@@ -94,8 +95,9 @@ export default function Step1_CaseInput({ caseData, setCaseData, onNext }: Step1
 
       {/* Category */}
       <div className="space-y-2">
-        <label className="text-xs font-semibold uppercase tracking-widest text-textSecondary">Case Category</label>
+        <label htmlFor="case-category" className="text-xs font-semibold uppercase tracking-widest text-textSecondary">Case Category</label>
         <select
+          id="case-category"
           value={caseData.category}
           onChange={(e) => setCaseData({ ...caseData, category: e.target.value })}
           className={`w-full bg-background border rounded-xl p-4 text-white appearance-none focus:outline-none focus:border-accentGold transition-colors ${
@@ -103,11 +105,12 @@ export default function Step1_CaseInput({ caseData, setCaseData, onNext }: Step1
           }`}
         >
           <option value="">Select category...</option>
-          <option value="Food & Dining">Food & Dining</option>
-          <option value="Financial">Financial</option>
-          <option value="Communication">Communication</option>
+          <option value="Civil">Civil matter</option>
+          <option value="Contract">Contract</option>
           <option value="Property">Property</option>
-          <option value="Entertainment">Entertainment</option>
+          <option value="Employment">Employment</option>
+          <option value="Family">Family</option>
+          <option value="Consumer">Consumer</option>
           <option value="Other">Other</option>
         </select>
         {errors.category && <p className="text-xs text-red-400">{errors.category}</p>}
@@ -115,11 +118,12 @@ export default function Step1_CaseInput({ caseData, setCaseData, onNext }: Step1
 
       {/* Description */}
       <div className="space-y-2">
-        <label className="text-xs font-semibold uppercase tracking-widest text-textSecondary">Case Description</label>
+        <label htmlFor="case-description" className="text-xs font-semibold uppercase tracking-widest text-textSecondary">Case Description</label>
         <textarea
+          id="case-description"
           value={caseData.description}
           onChange={(e) => setCaseData({ ...caseData, description: e.target.value })}
-          placeholder="Describe what happened and what the disagreement is about..."
+          placeholder="Describe the matter in your own words. Avoid adding unnecessary sensitive personal information."
           rows={4}
           className={`w-full bg-background border rounded-xl p-4 text-white placeholder:text-slate-600 focus:outline-none focus:border-accentGold transition-colors resize-none ${
             errors.description ? "border-red-500" : "border-glassBorder"
@@ -131,11 +135,12 @@ export default function Step1_CaseInput({ caseData, setCaseData, onNext }: Step1
       {/* Location & Jurisdiction */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
-          <label className="text-xs font-semibold uppercase tracking-widest text-textSecondary flex items-center gap-2">
+          <label htmlFor="case-location" className="text-xs font-semibold uppercase tracking-widest text-textSecondary flex items-center gap-2">
             <MapPin className="w-3 h-3" />
             Location
           </label>
           <input
+            id="case-location"
             type="text"
             value={caseData.location}
             onChange={(e) => setCaseData({ ...caseData, location: e.target.value })}
@@ -144,12 +149,13 @@ export default function Step1_CaseInput({ caseData, setCaseData, onNext }: Step1
           />
         </div>
         <div className="space-y-2">
-          <label className="text-xs font-semibold uppercase tracking-widest text-textSecondary">Jurisdiction</label>
+          <label htmlFor="case-jurisdiction" className="text-xs font-semibold uppercase tracking-widest text-textSecondary">Jurisdiction</label>
           <input
+            id="case-jurisdiction"
             type="text"
             value={caseData.jurisdiction}
             onChange={(e) => setCaseData({ ...caseData, jurisdiction: e.target.value })}
-            placeholder="e.g., State Court"
+            placeholder="e.g., County or state court (if known)"
             className="w-full bg-background border border-glassBorder rounded-xl p-4 text-white placeholder:text-slate-600 focus:outline-none focus:border-accentGold transition-colors"
           />
         </div>
@@ -157,11 +163,12 @@ export default function Step1_CaseInput({ caseData, setCaseData, onNext }: Step1
 
       {/* Relevant Dates */}
       <div className="space-y-2">
-        <label className="text-xs font-semibold uppercase tracking-widest text-textSecondary flex items-center gap-2">
+        <label htmlFor="case-dates" className="text-xs font-semibold uppercase tracking-widest text-textSecondary flex items-center gap-2">
           <Calendar className="w-3 h-3" />
           Relevant Dates
         </label>
         <input
+          id="case-dates"
           type="text"
           value={caseData.relevantDates}
           onChange={(e) => setCaseData({ ...caseData, relevantDates: e.target.value })}
@@ -185,8 +192,10 @@ export default function Step1_CaseInput({ caseData, setCaseData, onNext }: Step1
         {caseData.parties.map((party: string, index: number) => (
           <div key={index} className="flex gap-2">
             <input
+              id={`case-party-${index + 1}`}
               type="text"
               value={party}
+              aria-label={`Party ${index + 1} name`}
               onChange={(e) => updateParty(index, e.target.value)}
               placeholder={`Party ${index + 1} name`}
               className="flex-1 bg-background border border-glassBorder rounded-xl p-4 text-white placeholder:text-slate-600 focus:outline-none focus:border-accentGold transition-colors"
@@ -195,6 +204,7 @@ export default function Step1_CaseInput({ caseData, setCaseData, onNext }: Step1
               <GlassButton
                 variant="secondary"
                 onClick={() => removeParty(index)}
+                aria-label={`Remove party ${index + 1}`}
                 className="px-3 text-red-400 hover:text-red-300"
               >
                 ×

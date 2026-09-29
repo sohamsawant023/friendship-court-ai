@@ -1,7 +1,6 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
 import { Check, Circle } from "lucide-react";
 
 export interface Step {
@@ -14,91 +13,43 @@ interface GlassStepperProps {
   steps: Step[];
   orientation?: "horizontal" | "vertical";
   className?: string;
+  onStepClick?: (stepId: number) => void;
 }
 
-export function GlassStepper({ steps, orientation = "horizontal", className }: GlassStepperProps) {
+export function GlassStepper({ steps, orientation = "horizontal", className, onStepClick }: GlassStepperProps) {
   const isHorizontal = orientation === "horizontal";
 
   return (
-    <div className={cn("relative", className)}>
-      <div className={cn(
-        "flex gap-2",
-        isHorizontal ? "flex-row items-center" : "flex-col items-start"
-      )}>
-        {steps.map((step, index) => (
-          <div key={step.id} className={cn(
-            "flex items-center",
-            isHorizontal ? "flex-1" : "w-full"
-          )}>
-            {/* Step Content */}
-            <div className={cn(
-              "flex items-center gap-3 relative",
-              isHorizontal ? "flex-1" : "w-full"
+    <nav aria-label="Analysis progress" className={cn("relative", className)}>
+      <ol className={cn("flex", isHorizontal ? "items-center gap-2" : "flex-col gap-0")}>
+        {steps.map((step, index) => {
+          const canReturn = Boolean(onStepClick && step.status === "completed");
+          const content = <>
+            <span className={cn(
+              "relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full border transition-colors",
+              step.status === "completed" && "border-accentGold/40 bg-accentGold/10 text-accentGold",
+              step.status === "current" && "border-accentCyan/50 bg-accentCyan/10 text-accentCyan shadow-[0_0_18px_rgba(0,210,255,.12)]",
+              step.status === "upcoming" && "border-glassBorderSecondary bg-surface text-textSecondary",
+              step.status === "error" && "border-red-400/40 bg-red-400/10 text-red-300",
             )}>
-              {/* Step Circle */}
-              <motion.div
-                initial={{ scale: 0.8, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                className={cn(
-                  "relative flex items-center justify-center w-10 h-10 rounded-full border-2 transition-all duration-300",
-                  step.status === "completed" && "bg-accentGold/20 border-accentGold shadow-[0_0_15px_rgba(212,175,55,0.4)]",
-                  step.status === "current" && "bg-accentCyan/20 border-accentCyan shadow-[0_0_15px_rgba(0,210,255,0.4)] animate-pulse",
-                  step.status === "upcoming" && "bg-surface border-glassBorderSecondary",
-                  step.status === "error" && "bg-red-500/20 border-red-500"
-                )}
-              >
-                {step.status === "completed" ? (
-                  <Check className="w-5 h-5 text-accentGold" />
-                ) : step.status === "current" ? (
-                  <Circle className="w-4 h-4 text-accentCyan fill-accentCyan" />
-                ) : step.status === "error" ? (
-                  <Circle className="w-4 h-4 text-red-500 fill-red-500" />
-                ) : (
-                  <span className="text-xs text-textSecondary font-semibold">{step.id}</span>
-                )}
-              </motion.div>
+              {step.status === "completed" ? <Check className="h-4 w-4" /> : step.status === "current" ? <Circle className="h-3.5 w-3.5 fill-current" /> : step.status === "error" ? <Circle className="h-3.5 w-3.5 fill-current" /> : <span className="text-xs font-medium">{step.id}</span>}
+            </span>
+            <span className={cn(
+              "text-sm leading-snug",
+              step.status === "completed" && "text-accentGold",
+              step.status === "current" && "font-medium text-white",
+              step.status === "upcoming" && "text-textSecondary",
+              step.status === "error" && "text-red-300",
+            )}>{step.label}</span>
+          </>;
 
-              {/* Step Label */}
-              <div className={cn(
-                "flex-1",
-                !isHorizontal && "ml-2"
-              )}>
-                <motion.span
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  className={cn(
-                    "text-sm font-medium transition-colors",
-                    step.status === "completed" && "text-accentGold",
-                    step.status === "current" && "text-accentCyan",
-                    step.status === "upcoming" && "text-textSecondary",
-                    step.status === "error" && "text-red-400"
-                  )}
-                >
-                  {step.label}
-                </motion.span>
-              </div>
-
-              {/* Connector Line */}
-              {isHorizontal && index < steps.length - 1 && (
-                <div className={cn(
-                  "flex-1 h-0.5 mx-2 transition-all duration-300",
-                  step.status === "completed" ? "bg-accentGold/60" : "bg-glassBorderSecondary"
-                )} />
-              )}
-            </div>
-
-            {/* Vertical Connector */}
-            {!isHorizontal && index < steps.length - 1 && (
-              <div className="absolute left-5 top-10 w-0.5 h-8">
-                <div className={cn(
-                  "h-full w-full transition-all duration-300",
-                  step.status === "completed" ? "bg-accentGold/60" : "bg-glassBorderSecondary"
-                )} />
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
-    </div>
+          return <li key={step.id} className={cn("relative", isHorizontal ? "flex min-w-0 flex-1 items-center" : "min-h-[58px] pl-1")}>
+            {canReturn ? <button type="button" onClick={() => onStepClick?.(step.id)} className={cn("flex items-center gap-3 rounded-lg text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-accentGold", isHorizontal && "min-w-0")} aria-label={`Return to completed step ${step.id}: ${step.label}`}>{content}</button> : <div className={cn("flex items-center gap-3", isHorizontal && "min-w-0")} aria-current={step.status === "current" ? "step" : undefined}>{content}</div>}
+            {isHorizontal && index < steps.length - 1 && <span aria-hidden="true" className={cn("mx-2 h-px flex-1", step.status === "completed" ? "bg-accentGold/40" : "bg-glassBorderSecondary")} />}
+            {!isHorizontal && index < steps.length - 1 && <span aria-hidden="true" className={cn("absolute left-[18px] top-10 h-[26px] w-px", step.status === "completed" ? "bg-accentGold/35" : "bg-glassBorderSecondary")} />}
+          </li>;
+        })}
+      </ol>
+    </nav>
   );
 }

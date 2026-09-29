@@ -62,7 +62,7 @@ export default function NewAnalysis() {
     location: "",
     jurisdiction: "",
     relevantDates: "",
-    parties: [],
+    parties: ["", ""],
     documents: [],
     facts: null,
     laws: null,
