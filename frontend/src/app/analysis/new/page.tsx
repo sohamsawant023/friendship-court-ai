@@ -53,8 +53,9 @@ interface CaseData {
 export default function NewAnalysis() {
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(1);
+  const [isReady, setIsReady] = useState(false);
   const [caseData, setCaseData] = useState<CaseData>({
-    id: `FC-${Math.floor(Math.random() * 9000) + 1000}`,
+    id: "",
     title: "",
     category: "",
     description: "",
@@ -70,57 +71,58 @@ export default function NewAnalysis() {
     report: null,
   });
 
-  const steps: Step[] = [
-    { id: 1, label: "Case Input", status: currentStep === 1 ? "current" : currentStep > 1 ? "completed" : "upcoming" },
-    { id: 2, label: "Documents", status: currentStep === 2 ? "current" : currentStep > 2 ? "completed" : currentStep > 1 ? "upcoming" : "upcoming" },
-    { id: 3, label: "Fact Extraction", status: currentStep === 3 ? "current" : currentStep > 3 ? "completed" : currentStep > 2 ? "upcoming" : "upcoming" },
-    { id: 4, label: "Law Identification", status: currentStep === 4 ? "current" : currentStep > 4 ? "completed" : currentStep > 3 ? "upcoming" : "upcoming" },
-    { id: 5, label: "Similar Cases", status: currentStep === 5 ? "current" : currentStep > 5 ? "completed" : currentStep > 4 ? "upcoming" : "upcoming" },
-    { id: 6, label: "AI Analysis", status: currentStep === 6 ? "current" : currentStep > 6 ? "completed" : currentStep > 5 ? "upcoming" : "upcoming" },
-    { id: 7, label: "Final Report", status: currentStep === 7 ? "current" : currentStep > 7 ? "completed" : currentStep > 6 ? "upcoming" : "upcoming" },
-  ];
+  const labels = ["Case Input", "Documents", "Fact Extraction", "Law Identification", "Similar Cases", "AI Analysis", "Final Report"];
+  const steps: Step[] = labels.map((label, index) => ({
+    id: index + 1,
+    label,
+    status: index + 1 < currentStep ? "completed" : index + 1 === currentStep ? "current" : "upcoming",
+  }));
 
-  const updateSteps = () => {
-    steps.forEach((step, index) => {
-      if (index + 1 < currentStep) {
-        step.status = "completed";
-      } else if (index + 1 === currentStep) {
-        step.status = "current";
-      } else {
-        step.status = "upcoming";
+  useEffect(() => {
+    const caseId = new URLSearchParams(window.location.search).get("caseId");
+    const saved = caseId ? localStorage.getItem(`analysis:${caseId}`) : localStorage.getItem("currentAnalysis");
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        setCaseData((current) => ({ ...current, ...parsed }));
+        setCurrentStep(Math.max(1, Math.min(7, Number(parsed.currentStep) || 1)));
+      } catch {
+        localStorage.removeItem(caseId ? `analysis:${caseId}` : "currentAnalysis");
       }
-    });
-  };
+    }
+    setCaseData((current) => ({ ...current, id: current.id || `FC-${Date.now().toString().slice(-8)}` }));
+    setIsReady(true);
+  }, []);
 
   const handleNext = () => {
-    if (currentStep < 7) {
-      setCurrentStep(currentStep + 1);
-      updateSteps();
-    }
+    setCurrentStep((step) => Math.min(7, step + 1));
   };
 
   const handlePrevious = () => {
-    if (currentStep > 1) {
-      setCurrentStep(currentStep - 1);
-      updateSteps();
-    }
+    setCurrentStep((step) => Math.max(1, step - 1));
+  };
+
+  const handleStepClick = (stepId: number) => {
+    if (stepId < currentStep) setCurrentStep(stepId);
   };
 
   const handleSave = useCallback(() => {
-    localStorage.setItem("currentAnalysis", JSON.stringify(caseData));
-    // Save to recent cases
-    const recentCases = JSON.parse(localStorage.getItem("recentCases") || "[]");
+    if (!isReady || !caseData.id) return;
+    const savedData = { ...caseData, currentStep };
+    localStorage.setItem("currentAnalysis", JSON.stringify(savedData));
+    localStorage.setItem(`analysis:${caseData.id}`, JSON.stringify(savedData));
+    const recentCases = JSON.parse(localStorage.getItem("recentCases") || "[]") as Array<{ id: string; createdAt?: string; [key: string]: any }>;
+    const previous = recentCases.find((item) => item.id === caseData.id);
     const newCase = {
       id: caseData.id,
       title: caseData.title || "Untitled Case",
       category: caseData.category || "General",
       status: currentStep === 7 ? "completed" : "in_progress",
-      createdAt: new Date().toISOString().split("T")[0],
-      participants: caseData.parties || ["Party A", "Party B"],
+      createdAt: previous?.createdAt || new Date().toISOString().split("T")[0],
+      participants: caseData.parties.filter(Boolean),
     };
-    recentCases.unshift(newCase);
-    localStorage.setItem("recentCases", JSON.stringify(recentCases.slice(0, 10)));
-  }, [caseData, currentStep]);
+    localStorage.setItem("recentCases", JSON.stringify([newCase, ...recentCases.filter((item) => item.id !== caseData.id)].slice(0, 10)));
+  }, [caseData, currentStep, isReady]);
 
   useEffect(() => {
     handleSave();
@@ -146,6 +148,8 @@ export default function NewAnalysis() {
         return null;
     }
   };
+
+  if (!isReady) return <div className="mx-auto min-h-[60vh] max-w-6xl px-6 py-16 text-sm text-textSecondary">Loading your local draft…</div>;
 
   return (
     <div className="min-h-screen bg-background">
@@ -182,7 +186,7 @@ export default function NewAnalysis() {
           <div className="lg:col-span-3">
             <GlassCard className="p-6 sticky top-24">
               <h3 className="text-sm font-semibold text-white mb-6 uppercase tracking-wider">Analysis Workflow</h3>
-              <GlassStepper steps={steps} orientation="vertical" />
+              <GlassStepper steps={steps} orientation="vertical" onStepClick={handleStepClick} />
             </GlassCard>
           </div>
 

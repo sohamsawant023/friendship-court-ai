@@ -18,7 +18,7 @@ export function Navbar() {
 
   const navItems = [
     { name: "Dashboard", href: "/" },
-    { name: "New Case", href: "/case/new" },
+    { name: "New Analysis", href: "/analysis/new" },
     { name: "History", href: "/history" },
     { name: "Appeals", href: "/appeals" },
   ];
@@ -75,7 +75,7 @@ export function Navbar() {
         <div className="flex items-center gap-3">
           <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-accentCyan/10 border border-accentCyan/20 text-xs font-medium text-accentCyan shadow-[0_0_10px_rgba(0,210,255,0.1)]">
             <span className="w-1.5 h-1.5 rounded-full bg-accentCyan animate-pulse"></span>
-            Analysis ready
+            Local workspace
           </div>
           <button
             type="button"
